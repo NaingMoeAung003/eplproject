@@ -9,3 +9,4 @@ qrcode
 python-dotenv
 gunicorn
 itsdangerous
+Pillow
