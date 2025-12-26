@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<div style="max-width: 450px; margin: 50px auto; text-align: center;">
+    <div class="card">
+        <h2 style="color: var(--accent);">🔐 Setup Authenticator</h2>
+        <p style="color: #ccc; margin-bottom: 15px;">Scan this QR code with Google Authenticator or Authy.</p>
+        
+        <div style="background: white; padding: 10px; display: inline-block; border-radius: 5px;">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" style="width: 200px;">
+        </div>
+        
+        <p style="font-size: 0.8rem; color: #888; margin-top: 10px;">Secret: {{ secret }}</p>
+
+        <form method="POST" style="margin-top: 20px;">
+            <input type="text" name="otp_code" placeholder="Enter 6-digit Code" required style="text-align: center; letter-spacing: 5px; font-size: 1.2rem;">
+            <button type="submit" class="btn-action" style="background: var(--accent); color: white; margin-top: 15px;">Verify & Enable</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

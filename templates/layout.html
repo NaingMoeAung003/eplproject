@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPL Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            
+            <a href="{{ url_for('live_page') }}" class="nav-brand">
+                <img src="https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg" alt="PL Logo" class="nav-logo">
+                <div class="brand-text">
+                    <span class="brand-main">England</span>
+                    <span class="brand-sub">Premier League</span>
+                </div>
+            </a>
+
+            <div class="nav-links">
+                <a href="{{ url_for('live_page') }}" class="{{ 'active' if request.endpoint == 'live_page' }}">
+                    <i class="fas fa-circle-dot"></i> LIVE
+                </a>
+                <a href="{{ url_for('news_page') }}" class="{{ 'active' if request.endpoint == 'news_page' }}">
+                    <i class="fas fa-newspaper"></i> NEWS
+                </a>
+                <a href="{{ url_for('standings_page') }}" class="{{ 'active' if request.endpoint == 'standings_page' }}">
+                    <i class="fas fa-list-ol"></i> TABLE
+                </a>
+                <a href="{{ url_for('results_page') }}" class="{{ 'active' if request.endpoint == 'results_page' }}">
+                    <i class="fas fa-calendar-alt"></i> RESULTS
+                </a>
+                
+                {% if current_user.role == 'admin' %}
+                    <a href="{{ url_for('dashboard') }}" class="admin-link {{ 'active' if request.endpoint == 'dashboard' }}">
+                        <i class="fas fa-shield-alt"></i> ADMIN
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="nav-user">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{ current_user.username }}</span>
+                </div>
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    Logout <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}?v=5"></script>
+</body>
+</html>

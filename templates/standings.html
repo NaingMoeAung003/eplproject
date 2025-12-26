@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2 class="page-title" style="margin-bottom: 20px;">🏆 Premier League Table (2023-24)</h2>
+    
+    <div class="card table-container" style="padding: 0;">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;">#</th>
+                    <th style="text-align: left;">Club</th>
+                    <th title="Played">MP</th>
+                    <th title="Won">W</th>
+                    <th title="Drawn">D</th>
+                    <th title="Lost">L</th>
+                    <th title="Goal Difference">GD</th>
+                    <th title="Points" style="color: var(--secondary);">PTS</th>
+                    <th style="width: 150px;">Form</th>
+                </tr>
+            </thead>
+            <tbody id="standings-body">
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 30px; color: #aaa;">
+                        <i class="fas fa-circle-notch fa-spin"></i> Loading Standings...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="margin-top: 15px; display: flex; gap: 20px; font-size: 0.8rem; color: #aaa; justify-content: center;">
+        <div style="display: flex; align-items: center; gap: 5px;"><span class="form-badge form-w">W</span> Win</div>
+        <div style="display: flex; align-items: center; gap: 5px;"><span class="form-badge form-d">D</span> Draw</div>
+        <div style="display: flex; align-items: center; gap: 5px;"><span class="form-badge form-l">L</span> Loss</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Trigger fetch only on this page
+            if(typeof fetchAPIStandings === 'function') fetchAPIStandings();
+        });
+    </script>
+{% endblock %}

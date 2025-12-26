@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; text-align: center;">
+    <div class="card">
+        <h2 style="color: var(--secondary);">Login as {{ user_type }}</h2>
+        <form method="POST">
+            <div style="margin-bottom: 15px;">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-action" style="background: var(--secondary); color: black;">Login</button>
+        </form>
+        
+        <div style="margin-top: 20px; font-size: 0.9rem; display: flex; justify-content: space-between;">
+            <a href="{{ url_for('forgot_password') }}" style="color: #aaa; text-decoration: none;">
+                Forgot Password?
+            </a>
+            
+            <a href="{{ url_for('register', user_type=user_type.lower()) }}" style="color: var(--secondary); text-decoration: none; font-weight: bold;">
+                Create Account
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

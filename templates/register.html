@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; text-align: center;">
+    <div class="card">
+        <h2 style="color: var(--accent);">Register {{ user_type }}</h2>
+        <form method="POST">
+            <div style="margin-bottom: 15px;">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <input type="email" name="email" placeholder="Email Address" required>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-action" style="background: var(--accent); color: white;">Next: Setup MFA 🔐</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

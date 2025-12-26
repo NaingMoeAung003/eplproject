@@ -1,0 +1,124 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="text-align: center; padding: 50px 20px; animation: fadeIn 1s;">
+    <img src="https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg" alt="PL Logo" style="width: 120px; filter: brightness(0) invert(1); margin-bottom: 20px;">
+    
+    <h1 style="font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px;">
+        <span style="color: white;">England</span> <span style="color: var(--secondary);">Premier League</span>
+    </h1>
+    <p style="color: #aaa; font-size: 1.2rem; margin-bottom: 40px;">
+        Official Tournament Manager & Live Score System
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; align-items: stretch;">
+        
+        <div class="card landing-card">
+            <div class="card-content">
+                <h2 style="color: white; margin-bottom: 15px; font-size: 1.5rem;">
+                    ⚽ For Fans
+                </h2>
+                <p style="color: #ccc; line-height: 1.6; font-size: 1rem; margin: 0;">
+                    View live scores, standings, and match results updates instantly.
+                </p>
+            </div>
+            
+            <div class="card-buttons">
+                <a href="{{ url_for('client_login') }}" class="btn-action login-btn">
+                    Login
+                </a>
+                <a href="{{ url_for('register', user_type='client') }}" class="register-link">
+                    Register as Fan
+                </a>
+            </div>
+        </div>
+
+        <div class="card landing-card">
+            <div class="card-content">
+                <h2 style="color: white; margin-bottom: 15px; font-size: 1.5rem;">
+                    🛡️ For Admins
+                </h2>
+                <p style="color: #ccc; line-height: 1.6; font-size: 1rem; margin: 0;">
+                    Manage teams, players, update scores and control the system.
+                </p>
+            </div>
+
+            <div class="card-buttons">
+                <a href="{{ url_for('admin_login') }}" class="btn-action admin-btn">
+                    Admin Login
+                </a>
+                <a href="{{ url_for('register', user_type='admin') }}" class="register-link">
+                    Register as Admin
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Card Layout Fix */
+    .landing-card {
+        width: 320px; /* Slightly wider */
+        padding: 40px 30px; /* More Padding (Top/Bottom, Left/Right) */
+        display: flex;
+        flex-direction: column;
+        text-align: center; /* Center all text horizontally */
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Top Borders */
+    .landing-card:first-child { border-top: 4px solid var(--secondary); }
+    .landing-card:last-child { border-top: 4px solid var(--accent); }
+
+    /* Text Content Center Logic */
+    .card-content {
+        flex: 1; /* Takes up all available space */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Vertically Center content */
+        align-items: center; /* Horizontally Center content */
+        margin-bottom: 30px; /* Push buttons down */
+    }
+
+    /* Buttons Container */
+    .card-buttons {
+        width: 100%;
+        margin-top: auto;
+    }
+
+    /* Button Styling */
+    .btn-action {
+        padding: 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: transform 0.2s;
+        width: 100%; /* Full Width Buttons */
+        box-sizing: border-box;
+    }
+    .btn-action:hover { transform: translateY(-3px); }
+
+    .login-btn { background: var(--secondary); color: black; text-decoration: none; display: block; }
+    .admin-btn { background: var(--accent); color: white; text-decoration: none; display: block; }
+    
+    .register-link {
+        color: #888; 
+        font-size: 0.9rem; 
+        text-decoration: none;
+        display: block;
+        margin-top: 15px;
+        transition: color 0.3s;
+    }
+    .register-link:hover { color: white; text-decoration: underline; }
+
+    @media (max-width: 768px) {
+        .landing-card { width: 100% !important; margin-bottom: 20px; }
+    }
+</style>
+{% endblock %}

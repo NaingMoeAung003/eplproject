@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; text-align: center;">
+    <div class="card">
+        <h2 style="color: var(--secondary);">🔐 Two-Factor Auth</h2>
+        <p style="color: #aaa;">Please enter the code from your Authenticator App.</p>
+        
+        <form method="POST">
+            <div style="margin-bottom: 15px;">
+                <input type="text" name="otp_code" placeholder="000000" required style="text-align: center; letter-spacing: 5px; font-size: 1.5rem; font-weight: bold;">
+            </div>
+            <button type="submit" class="btn-action" style="background: var(--secondary); color: black;">Verify Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

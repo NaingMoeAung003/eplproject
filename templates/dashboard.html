@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
+        <div>
+            <h1 style="margin: 0; color: white;">🛡️ Admin Dashboard</h1>
+            <p style="color: #888; margin: 5px 0 0 0;">Manage Teams, Players & News</p>
+        </div>
+        <div style="background: #333; padding: 10px 20px; border-radius: 8px; border: 1px solid #444;">
+            <span style="color: var(--secondary); font-weight: bold;">Status:</span> Online 🟢
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px;">
+        
+        <div class="card">
+            <h3 style="color: var(--secondary); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+                <i class="fas fa-newspaper"></i> Post News (Local)
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div class="form-group">
+                    <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Headline</label>
+                    <input type="text" id="news-title" placeholder="Enter News Title">
+                </div>
+                <div class="form-group">
+                    <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Image URL</label>
+                    <input type="text" id="news-image" placeholder="http://...">
+                </div>
+                <div class="form-group">
+                    <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Content</label>
+                    <textarea id="news-content" rows="4" placeholder="Write something..."></textarea>
+                </div>
+                <button onclick="postNews()" class="btn-action" style="background: var(--secondary); color: black;">
+                    🚀 Publish News
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="color: #00bcd4; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+                <i class="fas fa-users-cog"></i> Register Team
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div class="form-group">
+                    <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Team Name</label>
+                    <input type="text" id="new-team-name" placeholder="e.g. Dream FC">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Code</label>
+                        <input type="text" id="new-team-code" placeholder="DRM">
+                    </div>
+                    <div class="form-group">
+                        <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Logo URL</label>
+                        <input type="text" id="new-team-logo" placeholder="Emoji or URL">
+                    </div>
+                </div>
+
+                <button onclick="registerNewTeam()" class="btn-action" style="background: #00bcd4; color: black;">
+                    💾 Save Team
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="color: #ff9800; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+                <i class="fas fa-user-plus"></i> Add Player
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div class="form-group">
+                    <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Select Team (API Source)</label>
+                    <select id="input-player-team">
+                        <option>Loading Teams...</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Player Name</label>
+                        <input type="text" id="new-player-name" placeholder="Name">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">No.</label>
+                        <input type="number" id="new-player-number" placeholder="#">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="color: #aaa; font-size: 0.85rem; margin-bottom: 5px;">Position</label>
+                    <select id="new-player-pos">
+                        <option value="Forward">Forward</option>
+                        <option value="Midfielder">Midfielder</option>
+                        <option value="Defender">Defender</option>
+                        <option value="Goalkeeper">Goalkeeper</option>
+                    </select>
+                </div>
+
+                <button onclick="registerNewPlayer()" class="btn-action" style="background: #ff9800; color: black;">
+                    ➕ Add Player
+                </button>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

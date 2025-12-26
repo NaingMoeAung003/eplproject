@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div style="text-align: center; margin-bottom: 30px; animation: fadeInDown 0.8s;">
+        <h1 class="page-title" style="font-size: 2.5rem; margin-bottom: 10px;">
+            <i class="fas fa-satellite-dish" style="color: var(--accent);"></i> Match Center
+        </h1>
+        <p style="color: #aaa;">Real-time updates & Live scores</p>
+    </div>
+
+    <div id="live-scores-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px;">
+        <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">
+            <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+            <p style="margin-top: 15px;">Scanning for live matches...</p>
+        </div>
+    </div>
+
+    <style>
+        /* Custom Animation for Live Page */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Match Card Enhancements for Live Page */
+        .match-card {
+            background: linear-gradient(145deg, #1e1e1e, #252525);
+            border: 1px solid #333;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            border-color: var(--secondary);
+        }
+
+        /* Pulse Animation for LIVE Text */
+        .live-pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; text-shadow: 0 0 5px var(--accent); }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; text-shadow: 0 0 5px var(--accent); }
+        }
+    </style>
+
+    <script>
+        // Force refresh every 60 seconds is handled in script.js
+        // This script block ensures the container exists
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("📡 Live Match Center Ready");
+        });
+    </script>
+
+{% endblock %}

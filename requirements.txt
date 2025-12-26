@@ -1,0 +1,11 @@
+flask
+flask-bcrypt
+flask-login
+pymongo
+dnspython
+requests
+pyotp
+qrcode
+python-dotenv
+gunicorn
+itsdangerous

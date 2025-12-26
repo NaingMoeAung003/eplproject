@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div id="loading" style="text-align: center; padding: 100px 0; color: #aaa;">
+        <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--accent);"></i>
+        <h2 style="margin-top: 20px;">Loading Squad Data...</h2>
+    </div>
+
+    <div id="team-content" style="display: none; animation: fadeIn 0.5s;">
+        
+        <div id="team-header" class="card" style="text-align: center; border-top: 5px solid var(--accent); padding: 40px; background: linear-gradient(180deg, #1e1e1e 0%, #121212 100%);">
+            </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            
+            <div class="card" style="grid-column: span 2;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+                    <h3 style="color: var(--accent); margin: 0;">👤 Current Squad</h3>
+                    <span style="font-size: 0.8rem; color: #888;">Source: API & Local DB</span>
+                </div>
+                
+                <div style="max-height: 600px; overflow-y: auto; padding-right: 5px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="color: #666; font-size: 0.8rem; text-transform: uppercase; position: sticky; top: 0; background: #1e1e1e; z-index: 10;">
+                                <th style="text-align: left; padding: 15px 10px;">No.</th>
+                                <th style="text-align: left;">Player</th>
+                                <th style="text-align: left;">Age</th>
+                                <th style="text-align: right; padding-right: 30px;">Pos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="squad-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card" style="height: fit-content;">
+                <h3 style="color: var(--secondary); border-bottom: 1px solid #333; padding-bottom: 10px;">ℹ️ Club Info</h3>
+                <div id="team-info-body" style="padding: 10px; line-height: 2; color: #ccc;">
+                    </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <a href="{{ url_for('standings_page') }}" style="display: inline-block; padding: 10px 20px; background: #333; color: white; border-radius: 5px; text-decoration: none; border: 1px solid #444;">
+                        ⬅️ Back to Table
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const teamId = "{{ team_code }}"; 
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log("Fetching details for Team ID:", teamId);
+            await loadTeamFromAPI();
+            await loadLocalPlayers();
+        });
+
+        async function loadTeamFromAPI() {
+            try {
+                const res = await fetch(`/api/squad/${teamId}`);
+                const data = await res.json();
+
+                if (data.response && data.response.length > 0) {
+                    const teamData = data.response[0].team;
+                    const players = data.response[0].players;
+                    
+                    // 1. Render Header
+                    document.getElementById('team-header').innerHTML = `
+                        <img src="${teamData.logo}" style="width: 120px; height: 120px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));">
+                        <h1 style="margin: 15px 0 5px 0; font-size: 2.5rem; color: white;">${teamData.name}</h1>
+                        <p style="color: #aaa; margin: 0;">Club ID: ${teamData.id}</p>
+                    `;
+
+                    // 2. Render Info
+                    document.getElementById('team-info-body').innerHTML = `
+                        <p><strong>📛 Club Name:</strong> ${teamData.name}</p>
+                        <p><strong>👕 Squad Size:</strong> ${players.length} Players</p>
+                        <p><strong>⚽ Logo Type:</strong> Official SVG/PNG</p>
+                    `;
+
+                    // 3. Render Squad
+                    const squadBody = document.getElementById('squad-body');
+                    squadBody.innerHTML = '';
+
+                    players.forEach(p => {
+                        renderPlayerRow(squadBody, p.number, p.name, p.age, p.position, p.photo);
+                    });
+
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('team-content').style.display = 'block';
+
+                } else {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('team-content').style.display = 'block';
+                    document.getElementById('team-header').innerHTML = `<h1 style="color:white;">Custom / Loading...</h1>`;
+                }
+
+            } catch (error) { console.error(error); }
+        }
+
+        async function loadLocalPlayers() {
+            try {
+                const res = await fetch(`/api/local-squad/${teamId}`);
+                const localPlayers = await res.json();
+                
+                if (localPlayers.length > 0) {
+                    const squadBody = document.getElementById('squad-body');
+                    localPlayers.forEach(p => {
+                        renderPlayerRow(squadBody, p.number, p.name, "N/A", p.pos, null, true);
+                    });
+                }
+            } catch (e) { console.error("Error loading local players:", e); }
+        }
+
+        function renderPlayerRow(tbody, number, name, age, position, photo, isLocal=false) {
+            let posColor = '#fff';
+            if(position === 'Goalkeeper') posColor = '#e6b800'; 
+            else if(position === 'Defender') posColor = '#4da6ff'; 
+            else if(position === 'Midfielder') posColor = '#00ff85'; 
+            else if(position === 'Attacker' || position === 'Forward') posColor = '#ff4444'; 
+
+            const photoUrl = photo || 'https://media.api-sports.io/football/players/50.png';
+            const nameColor = isLocal ? 'var(--secondary)' : 'white';
+            const badge = isLocal ? '<span style="background:var(--secondary); color:black; font-size:0.6rem; padding:2px 4px; border-radius:3px; margin-left:5px;">NEW</span>' : '';
+
+            tbody.innerHTML += `
+                <tr style="border-bottom: 1px solid #333; transition: 0.2s;" onmouseover="this.style.background='#252525'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 12px 10px; color: #666; font-family: monospace; font-size: 1.1rem;">${number || '-'}</td>
+                    <td style="display: flex; align-items: center; gap: 15px; padding: 12px 0;">
+                        <img src="${photoUrl}" onerror="this.src='https://media.api-sports.io/football/players/50.png'" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #333;">
+                        <span style="font-weight: 600; font-size: 1rem; color: ${nameColor};">${name} ${badge}</span>
+                    </td>
+                    <td style="color: #aaa;">${age || '-'}</td>
+                    <td style="text-align: right; color: ${posColor}; font-weight: bold; font-size: 0.9rem; padding-right: 30px;">${position}</td>
+                </tr>`;
+        }
+    </script>
+
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #121212; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h2 class="page-title">📅 Fixtures & Results (Season 2023)</h2>
+    
+    <div style="margin-bottom: 20px;">
+        <input type="text" id="search-input" onkeyup="filterMatches()" placeholder="🔍 Search Team (e.g. Arsenal, Chelsea)..." 
+               style="width: 100%; padding: 15px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; font-size: 1rem;">
+    </div>
+
+    <div id="matches-container" style="min-height: 300px;">
+        <p style="text-align: center; color: #aaa; padding-top: 20px;">Loading fixtures from API...</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if the function exists in script.js before calling
+            if (typeof fetchAPIFixtures === 'function') {
+                fetchAPIFixtures();
+            } else {
+                console.error("fetchAPIFixtures function not found. Check script.js");
+                document.getElementById('matches-container').innerHTML = "<p style='text-align:center;color:red;'>Script Error: Reload Page</p>";
+            }
+        });
+    </script>
+{% endblock %}

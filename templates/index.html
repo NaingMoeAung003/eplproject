@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fan Zone - EPL Live</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px;">
+            <h2 style="color: #fff; margin: 0;">⚽ Fan Zone</h2>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="color: #888;">User: {{ current_user.username }}</span>
+                <a href="{{ url_for('logout') }}" style="background-color: #333; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Logout</a>
+            </div>
+        </div>
+
+        <h2 style="color: #ff005a;">🔴 Live Matches (API)</h2>
+        <div id="live-scores-container" class="matches-grid">
+            <p style="color: #aaa;">Loading live data...</p>
+        </div>
+        <button onclick="fetchLiveScores()" style="margin-bottom: 30px; background-color: #333; border: 1px solid #555; color: #ccc; cursor: pointer;">🔄 Refresh Scores</button>
+
+        <h2>Standings Table</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th style="text-align: left;">Club</th>
+                        <th>PL</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>PTS</th>
+                    </tr>
+                </thead>
+                <tbody id="standings-body"></tbody>
+            </table>
+        </div>
+
+        <h2 style="margin-top: 30px;">Match Results</h2>
+        <div class="matches-grid" id="matches-container"></div>
+    </div>
+
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-team-name" style="margin:0; color:#fff;">Team Name</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modal-player-list"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <style>
+        /* Hide delete buttons for fans */
+        .delete-btn, .delete-player-btn { display: none !important; }
+    </style>
+</body>
+</html>
