@@ -23,6 +23,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'landing'
 
 # --- DATABASE CONNECTION ---
+# Note: In production, use environment variables for security
 MONGO_URI = "mongodb+srv://admin:jNyKLA7vQP1wwSiP@cluster0.pjotkzv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 DB_NAME = "epl_tournament_db"
 
@@ -188,7 +189,7 @@ def verify_2fa():
         flash("Invalid Authenticator Code", "danger")
     return render_template('verify_2fa.html')
 
-# 5. FORGOT PASSWORD (OTP BASED)
+# 5. Forgot Password
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
@@ -229,7 +230,7 @@ def logout():
     logout_user()
     return redirect(url_for('landing'))
 
-# --- API ROUTES ---
+# --- API ROUTES (PUBLIC) ---
 @app.route('/api/data', methods=['GET'])
 def get_all_data():
     teams_list = []
@@ -257,6 +258,7 @@ def get_live_epl_scores():
         data = response.json()
         if data.get('response'):
             all_matches = data['response']
+            # Demo: Fake live data for last 5 matches
             demo_matches = all_matches[-5:]
             for index, match in enumerate(demo_matches):
                 fake_minute = 15 + (index * 12)
@@ -290,17 +292,6 @@ def get_epl_standings():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-@app.route('/api/squad/<int:team_id>', methods=['GET'])
-def get_squad(team_id):
-    url = "https://v3.football.api-sports.io/players/squads"
-    querystring = {"team": str(team_id)}
-    headers = {"x-apisports-key": "6bc44922070120a601e0b25980ca97b6"}
-    try:
-        response = requests.get(url, headers=headers, params=querystring)
-        return jsonify(response.json())
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
 @app.route('/api/events/<int:fixture_id>', methods=['GET'])
 def get_match_events(fixture_id):
     url = "https://v3.football.api-sports.io/fixtures/events"
@@ -312,7 +303,6 @@ def get_match_events(fixture_id):
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# Match Statistics API
 @app.route('/api/stats/<int:fixture_id>', methods=['GET'])
 def get_match_stats(fixture_id):
     url = "https://v3.football.api-sports.io/fixtures/statistics"
@@ -352,7 +342,9 @@ def get_football_news():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# CRUD Routes (Local DB)
+# --- ADMIN API ROUTES (CREATE & READ) ---
+
+# 1. Register Team
 @app.route('/api/team', methods=['POST'])
 @login_required
 def api_register_team():
@@ -361,14 +353,12 @@ def api_register_team():
     teams_collection.insert_one({"name": data['name'], "code": data['code'].upper(), "logo": data['logo'], "players": []})
     return jsonify({"status": "success"})
 
-# 🟢 UPDATE: Register Player (Upsert Team)
+# 2. Add Player
 @app.route('/api/player', methods=['POST'])
 @login_required
 def api_register_player():
     if current_user.role != 'admin': return jsonify({"error": "Unauthorized"}), 403
     data = request.get_json()
-    
-    # Update if exists, Insert if not
     teams_collection.update_one(
         {"code": str(data['team_code'])},
         {
@@ -386,7 +376,7 @@ def api_register_player():
     )
     return jsonify({"status": "success"})
 
-# 🟢 NEW: Get Local Squad
+# 3. Get Players for a Team
 @app.route('/api/local-squad/<team_code>', methods=['GET'])
 def get_local_squad(team_code):
     team = teams_collection.find_one({"code": str(team_code)})
@@ -394,28 +384,7 @@ def get_local_squad(team_code):
         return jsonify(team['players'])
     return jsonify([])
 
-@app.route('/api/player/<team_code>/<player_name>', methods=['DELETE'])
-@login_required
-def delete_player(team_code, player_name):
-    if current_user.role != 'admin': return jsonify({"error": "Unauthorized"}), 403
-    teams_collection.update_one({"code": team_code}, {"$pull": {"players": {"name": player_name}}})
-    return jsonify({"status": "success"})
-
-@app.route('/api/match', methods=['POST'])
-@login_required
-def api_add_match():
-    if current_user.role != 'admin': return jsonify({"error": "Unauthorized"}), 403
-    matches_collection.insert_one(request.get_json())
-    return jsonify({"status": "success"})
-
-@app.route('/api/match/<match_id>', methods=['DELETE'])
-@login_required
-def api_delete_match(match_id):
-    if current_user.role != 'admin': return jsonify({"error": "Unauthorized"}), 403
-    matches_collection.delete_one({"_id": ObjectId(match_id)})
-    return jsonify({"status": "success"})
-
-# Legacy News Routes
+# 4. Post News (Local)
 @app.route('/api/news', methods=['GET', 'POST'])
 def api_news():
     if request.method == 'GET':
@@ -428,12 +397,50 @@ def api_news():
         return jsonify({"status": "success"})
     return jsonify({"error": "Unauthorized"}), 403
 
+
+# ==========================================
+# 🔴 DELETE ROUTES (NEWLY ADDED)
+# ==========================================
+
+# 1. DELETE NEWS
 @app.route('/api/news/<news_id>', methods=['DELETE'])
 @login_required
-def delete_news(news_id):
+def delete_news_item(news_id):
     if current_user.role != 'admin': return jsonify({"error": "Unauthorized"}), 403
-    news_collection.delete_one({"_id": ObjectId(news_id)})
-    return jsonify({"status": "success"})
+    try:
+        news_collection.delete_one({"_id": ObjectId(news_id)})
+        return jsonify({"status": "success", "message": "News deleted"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# 2. DELETE TEAM
+@app.route('/api/team/<team_code>', methods=['DELETE'])
+@login_required
+def delete_team(team_code):
+    if current_user.role != 'admin': return jsonify({"error": "Unauthorized"}), 403
+    try:
+        teams_collection.delete_one({"code": team_code})
+        return jsonify({"status": "success", "message": "Team deleted"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# 3. DELETE PLAYER
+@app.route('/api/player/<team_code>/<player_name>', methods=['DELETE'])
+@login_required
+def delete_player_from_team(team_code, player_name):
+    if current_user.role != 'admin': return jsonify({"error": "Unauthorized"}), 403
+    try:
+        result = teams_collection.update_one(
+            {"code": team_code},
+            {"$pull": {"players": {"name": player_name}}}
+        )
+        if result.modified_count > 0:
+            return jsonify({"status": "success", "message": "Player deleted"})
+        else:
+            return jsonify({"error": "Player not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
